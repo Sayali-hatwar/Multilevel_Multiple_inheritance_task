@@ -1,4 +1,3 @@
-# insurance => person details  insurance sum and cost calculate			
 class Customer:
     def __init__(self,cust_name,cust_acc,age,balance):
         self.customer_name = cust_name
@@ -77,14 +76,15 @@ class Insurance(Customer):
         return min(penalty,0.25)
     
     def process_claim(self,damage_amount):
-        print(f"Name of holder : {self.customer_name}")
+        print()
+        print(f"========== Accident Alert : {self.customer_name} Hit the pole!!! ========")
         print(f"Damage amount : {damage_amount}")
         print(f"Deductable amount : {self.deductable_amount}")
+    
         if damage_amount <= self.deductable_amount:
             user_pay = damage_amount
             # If the damage is less than the deductible, the company pays nothing!
             company_pays = 0
-            print("=="*20)
             print("Result: Damage is below deductible. Insurance covers $0.")
         else:
             user_pay = self.deductable_amount
@@ -113,6 +113,16 @@ class Standardinsurance(Insurance):
         final_rate = max(current_rate,0.01)
         return round(self.insurance_value*final_rate,2)
     
+    def display_receipt(self):
+        print()
+        print("=====================Standard Policy==================")
+        print(f"Customer Name : {self.customer_name} | Customer Age : {self.customer_age}")
+        print(f"Plan : {self.insurance_name} | ID : {self.insurance_id}")
+        print(f"Risk-Level : {self.risk_level()}(Risk-Factor : {self.risk_factor()})")
+        print(f"Deductable Amount : {self.deductable_amount}")
+        print(f"Insurance Final Value : {self.calculate_standard_premium()}")
+        print(f"Main Balance : {self.main_balance}")
+
 
 class Premium(Insurance):
     def __init__(self, cust_details):
@@ -127,7 +137,16 @@ class Premium(Insurance):
         # Final premium rate
         final_premium_rate = max(premium_rate,0.05)
         return round(self.insurance_value*final_premium_rate,2)
-      
+    
+    def display_receipt(self):
+        print("==================Premium Policy=================")
+        print(f"Customer Name : {self.customer_name} | Customer Age : {self.customer_age}")
+        print(f"Plan : {self.insurance_name} | ID : {self.insurance_id}")
+        print(f"VIP Perks : Experience year bonus of {self.experience_discount()*100}% is applied")
+        print(f"Deductable Amount : {self.deductable_amount}")
+        print(f"Insurance final Value : {self.calculate_premium()}")
+        print(f"Main Balance : {self.main_balance}")
+        
 
     
 
@@ -145,45 +164,17 @@ cust_data = {
     'smoking': False,
     'drinking': True,        # Adds penalty
     'hazardous_habit': False,
-    'damage_amount':300,
+    'damage_amount':300
 }
 
 policy = Standardinsurance(cust_data)
-std_total = policy.calculate_standard_premium()
+standard_premium = policy.display_receipt()
+print("--"*25)
+std_claim = policy.process_claim(damage_amount=1200)
+print()
+
 premium_policy = Premium(cust_data)
-prem_total = premium_policy.calculate_premium()
-#process = policy.process_claim(300)
-# # Display the results
+premium = premium_policy.display_receipt()
+print("--"*25)
+prem_claim = premium_policy.process_claim(damage_amount=1200)
 
-print(f"""===========================================================
-                INSURANCE SUMMARY REPORT
-==================================================================
-Customer Name : {policy.customer_name} | Account Number : {policy.customer_account}
-Main Balance : ${policy.main_balance}
-------------------------------------------------------------------
-PLAN COMPARISON:
-
-1. STANDARD PLAN
- - Final Premium : {policy.calculate_standard_premium()}
- - Deductibility : {policy.deductable_amount}
- - Claim Risk : High-on-pocket
-
-2. PREMIUM PLAN
- - Final Premium : {premium_policy.calculate_premium()}
- - Deductibility : {premium_policy.deductable_amount}
- - Bonus : Includes {premium_policy.experience_discount()*100}% Experience credit
-
- SAVING : If you go with premium plan you will save ${round(prem_total - std_total,2)}!
- ============================================================
-""")
-
-
-print(f"""
-================ Accident Alert : {policy.customer_name}!!!=================""")
-damage = 1200
-
-print("Insurance claim for Standard customer")
-pol_claim = policy.process_claim(damage)
-print("--"*20)
-print("Insurance Claim for Premium customer ")
-prem_pol_claim = premium_policy.process_claim(damage)
